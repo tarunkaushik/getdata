@@ -25,6 +25,7 @@ Raw Data
 * Fast Fourier Transform was applied to some of these signals to obtain other set of features.
 * These signals were measured in X, Y, and Z axes.
 * Many functions were further applied on these signals to calculate mean, standard deviation, etc.
+* Since all the observations for each feature were normalized, the vaues have no unit, and hence in the final dataset also varibles have no units.
 
 Processed data
 * Final dataset here separates out features pertaining to Mean and Standard Deviations of signals.
@@ -40,6 +41,7 @@ New variables in the final dataset
 * <Accelerometer/Gyroscope> tells which component was used to obtain signal.
 * <Mean/StandardDeviation> tells the function applied
 * <X-axis/Y-axis/Z-axis> tells the axis to which the feature refers or it has a <Magnitude>
+* All features are normalized hence, features have no unit.
 
 Following is the list of column names in the final tidy dataset created:
 
