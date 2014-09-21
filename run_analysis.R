@@ -67,21 +67,40 @@ train <- cbind(subject_train,X_train,y_train)
 test$dataset <- "test"
 train$dataset <- "train"
 
-## merging dataset test and train and storing in a single dataset data
-## This is the final dataset that contains all the data required to be merged.
+## merging dataset test and train and storing in a single dataset data.
 
 data <- rbind(test,train)
 
-## creating dataset statistics which contains mean and standard deviation of all the features 
-## calculated using sapply and merged using rbind setting mean and SD as names of the rows.
+## Selecting columns which refer to mean and standard deviation of of variables.
+## Using grep first subsetted columns which had mean or std in feature names, and from them removing those which had meanFrequency
+## Storing column index in variable mean_std_feature_columns.
+## Added 1 to every column index as in dataset data, first column is subject hence index of each feature was added by 1
 
-print("statistics contains feature wise mean and standard deviation calculated")
+mean_std_feature_columns <- sort(features[c(grep("mean",as.character(features[,2])),grep("std",as.character(features[,2]))),][which(!grepl("meanFreq",features[c(grep("mean",as.character(features[,2])),grep("std",as.character(features[,2]))),2])),1]+1)
 
-statistics <- rbind(sapply(data[,2:562],mean),sapply(data[,2:562],sd))
-row.names(statistics) <- c("Mean","SD")
+## Sebsetting data, selecting columns which are required, i.e. subject, mean and std features, activity, and dataset
+
+data <- data[,c(1,mean_std_feature_columns,564,565)]
+
+## Altering names of columns using sub.
+
+names(data) <- sub("^f","Frequency_",names(data))
+names(data) <- sub("^t","Time_",names(data))
+names(data) <- sub("BodyBody","Body",names(data))
+names(data) <- sub("Body","Body_",names(data))
+names(data) <- sub("Gravity","Gravity_",names(data))
+names(data) <- sub("Acc","Accelerometer_",names(data))
+names(data) <- sub("Gyro","Gyroscope_",names(data))
+names(data) <- sub("Jerk","Jerk_",names(data))
+names(data) <- sub("Mag","Magnitude_",names(data))
+names(data) <- sub("\\-std\\(\\)","StandardDeviation",names(data))
+names(data) <- sub("\\-mean\\(\\)","Mean",names(data))
+names(data) <- sub("-X","_X-axis",names(data))
+names(data) <- sub("-Y","_Y-axis",names(data))
+names(data) <- sub("-Z","_Z-axis",names(data))
 
 ## Now since average of all features is to be calculated, we would be needing a matrix of 180 rows 
-## and 561 columns. since there are 30 subjects and each has 561 features.
+## and columns equal to number of features subsetted. since there are 30 subjects and each has 6 activity.
 ## For this creating variable subjectsIndex which contains all subject and activityIndex containg all
 ## activity and then sorting them.
 
@@ -98,7 +117,10 @@ activityIndex <- sort(activityIndex)
 
 finaldatasetRows <- length(subjectsIndex)*length(activityIndex)
 
-finaldatasetCols <- 561
+## Number of columns required would be equal to number of features subsetted, which is equal to number of columns is data - 3
+## Subtracted 3 as subject, activity and dataset were also present in data along with features
+
+finaldatasetCols <- ncol(data)-3
 
 ## creating a matrix which would contain subject wise activity wise mean of features.
 ## Setting value to be 0 initially.
@@ -123,7 +145,7 @@ for(i in 1:length(subjectsIndex))
 	for(j in 1:length(activityIndex))
 	{
 		#tempMatrix stores data corresponding to a particular subject and activity
-		tempMatrix <- data[which(data$subject==subjectsIndex[i] & data$activity==activityIndex[j]),2:562]	
+		tempMatrix <- data[which(data$subject==subjectsIndex[i] & data$activity==activityIndex[j]),2:(finaldatasetCols+1)]	
 		
 		## Now in tepmMatrix we have all the observations of a particular subject partaining to particular activity
 		## Using sapply to calculating mean of each feature and storing the value in same variable
@@ -149,7 +171,9 @@ meanMatrix <- data.frame(meanMatrix)
 averageDataFrame <- cbind(subjectOfRow,activityOfRow,meanMatrix)
 
 ## Setting names of the columns, first column is subject, second is activity and third onwards, names of features
-names(averageDataFrame) <- c("subject","activity",as.character(features[,2]))
+names(averageDataFrame) <- c("subject","activity",as.character(names(data[,2:67])))
+names(averageDataFrame) <- sub("^F","Average_F",names(averageDataFrame))
+names(averageDataFrame) <- sub("^T","Average_T",names(averageDataFrame))
 
 ## averageDataFrame is the final dataset that we want
 ## writing the dataset in a file final_data.txt
