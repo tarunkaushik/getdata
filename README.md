@@ -2,9 +2,7 @@
 ## Explaination of how the code works.
 
 ### Introduction 
-The code is used to read data from 8 different text files and calculate mean and standard
-deviation for each variable of the dataset and also mean (or average) of each variable for
-each activity. I will first define the terms used in data.
+The code is used to read data from 8 different text files and calculate mean (or average) of select variables for each subject for each activity. The features selected should be either mean or standard deviation of meadurements.
 
 For code to run, following 8 files should be in the working directory
 * subject_test.txt
@@ -37,8 +35,8 @@ During the code, I created following variable, most of which are used only for i
 * subject_train: stores subject list or train read from file
 * test: dataset that contains all observations of test dataset
 * train: dataset that contains all observations of train dataset
-* data: final dataset that contains all the observations
-* statistics: stores overall mean and standard deviation of every feature, as asked in question
+* data: final dataset that contains all the observations of select features
+* mean_std_features_columns: Vector which contains the index of columns which are either mean or standard deviation of measurements 
 * finaldatasetRows: number of rows in final dataset
 * finaldatasetCols: number of columns in final dataset
 * meanMatrix: temparary matrix in which mean of all features is stored during loop
@@ -49,7 +47,7 @@ During the code, I created following variable, most of which are used only for i
 * subjectsIndex: stores all unique subject of data, sorted
 * activityOfRow: stores activity of each row of final data set
 * subjectOfRow: stores subject of each row of final data set
-* averageDataFrame: final dataset, containing mean of every feature for every activity of every subject
+* averageDataFrame: final dataset, containing mean of select features for every activity of every subject
 
 ## Structure of code
 ### Reading from file
@@ -67,26 +65,22 @@ Set names of features in X_test and X_train dataset using features
 Created test and train dataset which contains subject, fature values, and activity using cbind
 Created a column dataset to define to which dataset each observation belongs, assigning "test" and "train" as values
 Merged dataset test and train and storing in a single dataset data
-This is the final dataset that contains all the data required to be merged.
-
-### Mean and standard deviation of all features of all observations
-Created dataset statistics which contains mean and standard deviation of all the features 
-Calculated using sapply and merged using rbind
-Set mean and SD as names of the rows.
+Subsetted data by selecting features which are mean or standard deviation of measurements.
+This is the final dataset that contains all the data required to calculate subject-activity wise average of features.
 
 ### Subect wise activity wise means of features
-Now since average of all features was to be calculated, a matrix of 180 rows and 561 columns was needed
-Since there are 30 subjects having 6 activities and each has 561 features.
+Now since average of all features was to be calculated, a matrix of 180 rows and a certain number of columns was needed
+Since there are 30 subjects having 6 activities and each has a few features.
 For this created variable subjectsIndex which contains all subject and activityIndex containg all activity and then sorted them.
 Calculated number of rows in final dataset, which would be 180 and stored in finaldatasetRows
 
-## Temprary variables for using in loop
+### Temprary variables for using in loop
 Created a matrix, meanMatrix which would contain subject wise activity wise mean of features.
 Set value of all cells to be 0 initially.
 In final dataset cbind would be used to merge data with subject and activity of each row, hence initialized
 empty vectors to store vale of activity and subject of each row 
 
-###Loop within a loop
+### Loop within a loop
 Outer loop iterates from 1 to length(subjectsIndex) that is number of times equal to number of subjects
 Inner loop iterates from 1 to length(activityIndex) that is number of times equal to number of activity
 Srored all the observations of a particular subject partaining to particular activity in tempMatrix
@@ -98,6 +92,15 @@ Set subject and activity of the row in subjectOfRow and activityOfRow respective
 Converted vectors,subjectOfRow and activityOfRow, and matrix, meanMatrix, to data frame
 In dataframe averageDataFrame merged the above dataframes to compile in one dataframe
 Set names of the columns, first column is subject, second is activity and third onwards, names of features
+
+### Simplification of column names
+Since each feature was either a time or frequency measurement, it was specified in name of features.
+Some features had the word Body repeated, corrected it.
+Specified the instrument, accelerometer or gyroscpe, used for mreasurement.
+Specified component, body or gravity, of accelerometer measurements.
+Specified Magnitude, or X, Y, orZ axis to features,
+Since clean data contains average of observations, Average was prefixed to feature names.
+Except the last step all steps were applied on data, and hence reflected in averageDataFrame as well.
 
 ### Clean data in file
 averageDataFrame is the final dataset that we want
